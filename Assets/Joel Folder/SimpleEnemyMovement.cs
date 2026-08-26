@@ -3,6 +3,7 @@ using UnityEngine;
 public class SimpleEnemyMovement : MonoBehaviour
 {
     public float speed;
+    public bool isWalking = true;
     public bool isGoingLeft = true;
 
     void Start()
@@ -15,7 +16,14 @@ public class SimpleEnemyMovement : MonoBehaviour
 
     void Update()
     {
-        gameObject.GetComponent<Rigidbody2D>().linearVelocityX = speed;
+        if (isWalking)
+        {
+            gameObject.GetComponent<Rigidbody2D>().linearVelocityX = speed;
+        }
+        else
+        {
+            gameObject.GetComponent<Rigidbody2D>().linearVelocityX = 0f;
+        }
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
@@ -27,5 +35,8 @@ public class SimpleEnemyMovement : MonoBehaviour
     {
         isGoingLeft = !isGoingLeft;
         speed *= -1;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 }
