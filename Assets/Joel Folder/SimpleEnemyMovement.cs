@@ -63,7 +63,10 @@ public class SimpleEnemyMovement : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        Flip();
+        if (!collision.CompareTag("Player"))
+        {
+            Flip();
+        }
     }
 
     public void Flip()
