@@ -6,7 +6,11 @@ using System.Collections;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private GameObject firstSelectedButton;
+    [SerializeField] private GameObject firstSelectedOptionsButton;
     [SerializeField] private string playScene;
+
+    [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private GameObject optionsPanel;
 
     private void OnEnable()
     {
@@ -28,6 +32,27 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         SceneManager.LoadScene(playScene);
+    }
+
+
+    public void Options()
+    {
+        mainMenuPanel.SetActive(false);
+        optionsPanel.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstSelectedOptionsButton);
+    }
+
+
+    public void Back()
+    {
+        if (optionsPanel.activeSelf)
+        {
+            optionsPanel.SetActive(false);
+            mainMenuPanel.SetActive(true);
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstSelectedButton);
+        }
     }
 
     public void QuitGame()
