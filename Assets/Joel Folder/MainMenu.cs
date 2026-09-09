@@ -2,15 +2,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private GameObject firstSelectedButton;
     [SerializeField] private GameObject firstSelectedOptionsButton;
-    [SerializeField] private string playScene;
 
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject optionsPanel;
+
+    [SerializeField] private ScreenFader fader;
+    [SerializeField] private AudioClip playGameSound;
 
     private void OnEnable()
     {
@@ -29,11 +32,16 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    public void PlayGame()
+    private void Start()
     {
-        SceneManager.LoadScene(playScene);
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
+    public void PlayGame(string sceneName)
+    {
+        SoundManager.Instance.PlaySFX(playGameSound, 0.5f);
+        fader.LoadScene(sceneName);
+    }
 
     public void Options()
     {

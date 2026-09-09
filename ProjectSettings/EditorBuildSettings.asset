@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Joel Folder/Main Menu.unity
     guid: 9c813fe910abf80459c38697482f2f57
   - enabled: 1
+    path: Assets/Joel Folder/Level Select.unity
+    guid: 2ae403feada146b42ba445ec0b463f91
+  - enabled: 1
     path: Assets/Joel Folder/Joel Scene.unity
     guid: 1468a53f18abd66419ea66f91f7aca8f
   m_configObjects:
