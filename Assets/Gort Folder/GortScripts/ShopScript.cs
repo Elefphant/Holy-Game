@@ -55,7 +55,7 @@ public class ShopScript : MonoBehaviour
         for (int i = 0; i < ItemSlots.Count; i++)
         {
             GameObject newItem = new GameObject();
-            int decider = Random.Range(1, 6);
+            int decider = Random.Range(1, 5);
             
             if (decider == 1)
             {
@@ -70,10 +70,6 @@ public class ShopScript : MonoBehaviour
                 newItem = Instantiate(Helmet, ItemSlots[i].position, ItemSlots[i].rotation);
             }
             else if (decider == 4)
-            {
-                newItem = Instantiate(Book, ItemSlots[i].position, ItemSlots[i].rotation);
-            }
-            else if (decider == 5)
             {
                 newItem = Instantiate(Sword, ItemSlots[i].position, ItemSlots[i].rotation);
             }
@@ -146,7 +142,7 @@ public class ShopScript : MonoBehaviour
         }
     }
     void UpdateIndicator()
-    {
+    {   
         Indicator.transform.position = ItemSlots[CurrentSlot].position;
     }
     void Update()
