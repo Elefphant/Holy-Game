@@ -23,6 +23,26 @@ public class ShopScript : MonoBehaviour
 
     public int Currency;
     public Text CurrencyText;
+
+    public InputActionAsset InputActions;
+    private InputAction ShopNavigateAction;
+    private InputAction ShopBuyAction;
+
+
+    private void OnEnable()
+    {
+        InputActions.FindActionMap("UI").Enable();
+    }
+    private void OnDisable()
+    {
+        InputActions.FindActionMap("UI").Disable();
+    }
+    private void Awake()
+    {
+        var uiAction = InputActions.FindActionMap("UI");
+        ShopNavigateAction = uiAction.FindAction("Navigate");
+        ShopBuyAction = uiAction.FindAction("Submit");
+    }
     void Start()
     {
         Currency = 100;
@@ -66,7 +86,7 @@ public class ShopScript : MonoBehaviour
     {
         for (int i = 0; i < ItemSlots.Count; i++)
         {
-            if (i == CurrentSlot)
+            if (i == CurrentSlot && Items[CurrentSlot] != null)
             {
                 ItemSlots[i].GetChild(0).GetChild(0).GetComponent<Text>().text = "Cost: " + Items[CurrentSlot].GetComponent<ItemStatsScript>().Price;
             }
@@ -81,12 +101,34 @@ public class ShopScript : MonoBehaviour
         if (Keyboard.current.spaceKey.wasPressedThisFrame && Items[CurrentSlot] != null)
         {
             int cost = Items[CurrentSlot].GetComponent<ItemStatsScript>().Price;
-            if (Currency - cost > 0 )
+            if (Currency - cost >= 0 )
             {
                 Currency -= cost;
                 CurrencyText.text = "Currency: " + Currency;
                 Destroy(Items[CurrentSlot]);
             }   
+        }
+
+        Vector2 input = ShopNavigateAction.ReadValue<Vector2>();
+
+        if (ShopNavigateAction.WasPressedThisFrame())
+        {
+            if (input.x > 0)
+            {
+                Move(Vector2Int.right);
+            }
+            else if (input.x < 0)
+            {
+                Move(Vector2Int.left);
+            }
+            else if (input.y > 0)
+            {
+                Move(Vector2Int.up);
+            }
+            else if (input.y < 0)
+            {
+                Move(Vector2Int.down);
+            }
         }
     }
     void Move(Vector2Int direction)
@@ -105,26 +147,6 @@ public class ShopScript : MonoBehaviour
     }
     void UpdateIndicator()
     {
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.right);
-        }
-
-        if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.left);
-        }
-
-        if (Keyboard.current.upArrowKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.up);
-        }
-
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame)
-        {
-            Move(Vector2Int.down);
-        }
-
         Indicator.transform.position = ItemSlots[CurrentSlot].position;
     }
     void Update()
