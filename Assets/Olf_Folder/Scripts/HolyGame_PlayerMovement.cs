@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 public class HolyGame_PlayerMovement : MonoBehaviour
 {
@@ -22,12 +23,17 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     public float G_MovementSpeed;
     public float G_JumpSpeed;
     public float G_DashSpeed;
+    public float G_MeleeDamage;
 
     private bool IsFacingRight;
     private bool GroundCheckFrame;
     public Transform GroundCheck;
     public Vector2 GroundCheckBox = new Vector2(0.4f, 0.1f);
     public LayerMask Groundmask;
+    public Transform MeleeAttack;
+    public Vector2 MeleeHurtbox = new Vector2(1f, 1f);
+    public LayerMask EnemyLayerMask;
+    private bool IsAttacking = false;
     private bool IsDashing = false;
 
     private void OnEnable()
@@ -62,6 +68,11 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         if (G_JumpAction.WasPressedThisFrame() && GroundCheckFrame)
         {
             Jump();
+        }
+
+        if (G_AttackAction.WasPressedThisFrame())
+        {
+            MeleeAttackAction();
         }
 
         if (G_MoveAmt.x < 0f && !IsFacingRight)
@@ -161,6 +172,39 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         {
             GodRB.linearVelocity = new Vector2(GodRB.linearVelocity.x, 0);
             GodRB.AddForce(Vector2.up * G_JumpSpeed, ForceMode2D.Impulse);
+        }
+    }
+    #endregion
+
+    #region Attack
+    private void MeleeAttackAction()
+    {
+        if (!IsAttacking)
+        {
+            StartCoroutine(MeleeAttackRoutine(EnemyLayerMask));
+        }
+    }
+    private IEnumerator MeleeAttackRoutine(LayerMask enemyLayer)
+    {
+        IsAttacking = true;
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeHurtbox, 0f, enemyLayer);
+        foreach (var collider in colliders)
+        {
+            if (collider.gameObject == collider.CompareTag("Enemy"))
+            {
+                //Deal Damage
+            }
+        }
+        Debug.Log("Attacked");
+        yield return new WaitForSeconds(0.4f);
+        IsAttacking = false;
+    }
+    private void OnDrawGizmos()
+    {
+        if (MeleeAttack != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(MeleeAttack.position, MeleeHurtbox);
         }
     }
     #endregion

@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &468116249 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7797299899932914546, guid: 20acdb1483953d74a8cf68bf52e57376, type: 3}
+  m_PrefabInstance: {fileID: 1846251910}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &935764877
 GameObject:
   m_ObjectHideFlags: 0
@@ -610,6 +615,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1537604044}
     - target: {fileID: 5800146874270787581, guid: 20acdb1483953d74a8cf68bf52e57376, type: 3}
+      propertyPath: MeleeAttack
+      value: 
+      objectReference: {fileID: 468116249}
+    - target: {fileID: 5800146874270787581, guid: 20acdb1483953d74a8cf68bf52e57376, type: 3}
       propertyPath: GroundCheckBox.x
       value: 0.65
       objectReference: {fileID: 0}
@@ -620,6 +629,14 @@ PrefabInstance:
     - target: {fileID: 5800146874270787581, guid: 20acdb1483953d74a8cf68bf52e57376, type: 3}
       propertyPath: Groundmask.m_Bits
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7797299899932914546, guid: 20acdb1483953d74a8cf68bf52e57376, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.505
+      objectReference: {fileID: 0}
+    - target: {fileID: 7797299899932914546, guid: 20acdb1483953d74a8cf68bf52e57376, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.087
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
