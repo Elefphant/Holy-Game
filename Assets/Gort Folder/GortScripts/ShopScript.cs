@@ -7,7 +7,9 @@ using UnityEngine.UI;
 
 public class ShopScript : MonoBehaviour
 {
-    public List<GameObject> Items = new List<GameObject>();
+    public List<AudioClip> coinSounds;
+
+    private List<GameObject> Items = new List<GameObject>();
     public List<Transform> ItemSlots = new List<Transform>();
     public List<Vector2Int> SlotCoordinates = new List<Vector2Int>();
 
@@ -28,6 +30,11 @@ public class ShopScript : MonoBehaviour
     private InputAction ShopNavigateAction;
     private InputAction ShopBuyAction;
 
+    public float soundCounter = 5;
+    public bool hasPlayedSFX1 = true;
+    public bool hasPlayedSFX2 = true;
+    public bool hasPlayedSFX3 = true;
+    public float sfxTimer;
 
     private void OnEnable()
     {
@@ -78,6 +85,42 @@ public class ShopScript : MonoBehaviour
         }
         CurrencyText.text = "Currency: " + Currency;
     }
+    void PlayRandomCoinSound()
+    {
+        int randomSound = Random.Range(0, coinSounds.Count);
+        TestSoundScript.Instance.PlaySoundEffect(coinSounds[randomSound], 1f);
+    }
+    void UpdateSounds()
+    {
+        soundCounter += Time.deltaTime;
+        if (hasPlayedSFX1 == false)
+        {
+            PlayRandomCoinSound();
+            sfxTimer = Random.Range(0.1f, 0.2f);
+
+            hasPlayedSFX1 = true;
+        }
+        else if (hasPlayedSFX2 == false)
+        {
+            if (soundCounter >= sfxTimer)
+            {
+                PlayRandomCoinSound();
+                soundCounter = 0;
+                sfxTimer = Random.Range(0.1f, 0.2f);
+
+                hasPlayedSFX2 = true;
+            }
+        }
+        else if (hasPlayedSFX3 == false)
+        {
+            if (soundCounter >= sfxTimer)
+            {
+                PlayRandomCoinSound();
+
+                hasPlayedSFX3 = true;
+            }
+        }
+    }
     void UpdateCostTexts()
     {
         for (int i = 0; i < ItemSlots.Count; i++)
@@ -102,6 +145,11 @@ public class ShopScript : MonoBehaviour
                 Currency -= cost;
                 CurrencyText.text = "Currency: " + Currency;
                 Destroy(Items[CurrentSlot]);
+
+                soundCounter = 0;
+                hasPlayedSFX1 = false;
+                hasPlayedSFX2 = false;
+                hasPlayedSFX3 = false;
             }   
         }
 
@@ -148,6 +196,7 @@ public class ShopScript : MonoBehaviour
     void Update()
     {
         PlayerInput();
+        UpdateSounds();
         UpdateIndicator();
         UpdateCostTexts();
     }
