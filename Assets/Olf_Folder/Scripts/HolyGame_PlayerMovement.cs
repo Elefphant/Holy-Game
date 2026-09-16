@@ -17,6 +17,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     private InputAction G_DashAction;
 
     private Vector2 G_MoveAmt;
+    private int G_DashAmt;
 
     public float G_MovementSpeed;
     public float G_JumpSpeed;
@@ -27,6 +28,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     public Transform GroundCheck;
     public Vector2 GroundCheckBox = new Vector2(0.4f, 0.1f);
     public LayerMask Groundmask;
+    private bool IsDashing = false;
 
     private void OnEnable()
     {
@@ -52,6 +54,11 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         G_MoveAmt = G_MoveAction.ReadValue<Vector2>();
         GroundCheckFrame = IsGrounded(Groundmask);
 
+        if (G_DashAction.WasPressedThisFrame() && G_DashAmt > 0)
+        {
+            Dash();
+        }
+
         if (G_JumpAction.WasPressedThisFrame() && GroundCheckFrame)
         {
             Jump();
@@ -66,7 +73,64 @@ public class HolyGame_PlayerMovement : MonoBehaviour
             Flip();
         }
     }
+    #region Walk
+    private void Walk()
+    {
+        float moveVelocityX = (G_MoveAmt.x * G_MovementSpeed);
+        float moveVelocityY = GodRB.linearVelocity.y;
+        GodRB.linearVelocity = new Vector2(moveVelocityX, moveVelocityY);
+    }
+    #endregion
 
+    #region Flip Sprite
+    private void Flip()
+    {
+        IsFacingRight = !IsFacingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1f;
+        transform.localScale = scale;
+    }
+    #endregion
+
+    #region Dash
+    private void Dash()
+    {
+        if (!IsDashing)
+        {
+            StartCoroutine(DashRoutine());
+        }
+    }
+
+    private IEnumerator DashRoutine()
+    {
+        IsDashing = true;
+        float horizontalMovement = G_MoveAmt.x;
+        Vector2 dashDirection;
+        if (G_MoveAmt.x != 0)
+        {
+            dashDirection = new Vector2(Mathf.Sign(horizontalMovement), 0);
+        }
+        else
+        {
+            float facingDirection = IsFacingRight ? -1f : 1f;
+            dashDirection = new Vector2(facingDirection, 0);
+        }
+
+        GodRB.linearVelocity = dashDirection * G_DashSpeed;
+
+        float originalGravity = GodRB.gravityScale;
+        GodRB.gravityScale = 0;
+
+        G_DashAmt -= 1;
+
+        yield return new WaitForSeconds(0.2f);
+
+        GodRB.gravityScale = originalGravity;
+        IsDashing = false;
+    }
+    #endregion
+
+    #region GroundCheck
     private bool IsGrounded(LayerMask groundLayer)
     {
         Collider2D[] colliders = Physics2D.OverlapBoxAll(GroundCheck.position, GroundCheckBox, 0f, groundLayer);
@@ -75,6 +139,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         {
             if (collider.gameObject == gameObject)
                 continue;
+            G_DashAmt = 1;
             return true; 
         }
         return false;
@@ -87,24 +152,24 @@ public class HolyGame_PlayerMovement : MonoBehaviour
             Gizmos.DrawWireCube(GroundCheck.position, GroundCheckBox);
         }
     }
+    #endregion
 
-    private void Flip()
-    {
-        IsFacingRight = !IsFacingRight;
-        Vector3 scale = transform.localScale;
-        scale.x *= -1f;
-        transform.localScale = scale;
-    }
+    #region Jump
     private void Jump()
     {
-        GodRB.linearVelocity = new Vector2(GodRB.linearVelocity.x, 0);
-        GodRB.AddForce(Vector2.up * G_JumpSpeed, ForceMode2D.Impulse);
+        if (!IsDashing)
+        {
+            GodRB.linearVelocity = new Vector2(GodRB.linearVelocity.x, 0);
+            GodRB.AddForce(Vector2.up * G_JumpSpeed, ForceMode2D.Impulse);
+        }
     }
+    #endregion
 
     private void FixedUpdate()
     {
-        float moveVelocityX = (G_MoveAmt.x * G_MovementSpeed);
-        float moveVelocityY = GodRB.linearVelocity.y;
-        GodRB.linearVelocity = new Vector2(moveVelocityX, moveVelocityY);
+        if (!IsDashing)
+        {
+            Walk();
+        }
     }
 }
