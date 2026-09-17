@@ -177,11 +177,23 @@ MonoBehaviour:
   G_MovementSpeed: 5
   G_JumpSpeed: 6
   G_DashSpeed: 10
+  G_MeleeDamage: 0
   GroundCheck: {fileID: 0}
   GroundCheckBox: {x: 0.4, y: 0.1}
   Groundmask:
     serializedVersion: 2
     m_Bits: 0
+  MeleeAttack: {fileID: 0}
+  MeleeAttackRange: {x: 0, y: 0}
+  ConstantMeleeBoxSize: {x: 1, y: 1}
+  DashHurtBox: {x: 2.4, y: 0.5}
+  EnemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  HealthBuff: 0
+  StrengthBuff: 0
+  ManaBuff: 0
+  DashWeapon: 0
 --- !u!1 &4093479508493806834
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,7 +250,7 @@ Transform:
   m_GameObject: {fileID: 4146346836559077933}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.12967391, y: -0.16034448, z: 0}
+  m_LocalPosition: {x: 0.068, y: -0.221, z: 0}
   m_LocalScale: {x: 0.92683816, y: 0.8567241, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

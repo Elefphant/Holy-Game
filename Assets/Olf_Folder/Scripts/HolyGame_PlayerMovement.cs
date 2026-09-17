@@ -12,30 +12,49 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     SpriteRenderer God_Sprite;
     public int FacingDirection = 1;
 
+    #region Input Actions
     private InputAction G_MoveAction;
     private InputAction G_JumpAction;
     private InputAction G_AttackAction;
     private InputAction G_DashAction;
+    #endregion
 
     private Vector2 G_MoveAmt;
     private int G_DashAmt;
 
+    #region Floats
     public float G_MovementSpeed;
     public float G_JumpSpeed;
     public float G_DashSpeed;
+    public float G_DashLength = 0.2f; // in seconds
     public float G_MeleeDamage;
+    public float G_MeleeAttackCooldown = 0.5f; // in seconds
+    #endregion
 
-    private bool IsFacingRight;
-    private bool GroundCheckFrame;
     public Transform GroundCheck;
     public Vector2 GroundCheckBox = new Vector2(0.4f, 0.1f);
     public LayerMask Groundmask;
     public Transform MeleeAttack;
-    public Vector2 MeleeHurtbox = new Vector2(1f, 1f);
+    public Vector2 MeleeAttackRange;
+    public Vector2 ConstantMeleeBoxSize = new Vector2(1f, 1f);
+    public Vector2 DashHurtBox = new Vector2(0.5f, 1f);
     public LayerMask EnemyLayerMask;
+
+    #region Unlockables
+    public bool HealthBuff = false;
+    public bool StrengthBuff = false;
+    public bool ManaBuff = false;
+    public bool DashWeapon = false;
+    #endregion
+
+    #region Bools
     private bool IsAttacking = false;
     private bool IsDashing = false;
+    private bool IsFacingRight;
+    private bool GroundCheckFrame;
+    #endregion
 
+    #region Enbl Disbl
     private void OnEnable()
     {
         InputActions.FindActionMap("Player").Enable();
@@ -44,6 +63,8 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     {
         InputActions.FindActionMap("Player").Disable();
     }
+    #endregion
+
     private void Awake()
     {
         GodRB = GetComponent<Rigidbody2D>();
@@ -60,6 +81,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         G_MoveAmt = G_MoveAction.ReadValue<Vector2>();
         GroundCheckFrame = IsGrounded(Groundmask);
 
+        #region KeyPress
         if (G_DashAction.WasPressedThisFrame() && G_DashAmt > 0)
         {
             Dash();
@@ -83,6 +105,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         {
             Flip();
         }
+        #endregion
     }
     #region Walk
     private void Walk()
@@ -127,14 +150,20 @@ public class HolyGame_PlayerMovement : MonoBehaviour
             dashDirection = new Vector2(facingDirection, 0);
         }
 
+        if (DashWeapon)
+        {
+            MeleeAttackRange = DashHurtBox;
+            MeleeAttackAction();
+            Debug.Log("Dash Attacked");
+        }
+
         GodRB.linearVelocity = dashDirection * G_DashSpeed;
 
         float originalGravity = GodRB.gravityScale;
         GodRB.gravityScale = 0;
 
         G_DashAmt -= 1;
-
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(G_DashLength);
 
         GodRB.gravityScale = originalGravity;
         IsDashing = false;
@@ -187,7 +216,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     private IEnumerator MeleeAttackRoutine(LayerMask enemyLayer)
     {
         IsAttacking = true;
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeHurtbox, 0f, enemyLayer);
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeAttackRange, 0f, enemyLayer);
         foreach (var collider in colliders)
         {
             if (collider.gameObject == collider.CompareTag("Enemy"))
@@ -196,7 +225,8 @@ public class HolyGame_PlayerMovement : MonoBehaviour
             }
         }
         Debug.Log("Attacked");
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(G_MeleeAttackCooldown);
+        MeleeAttackRange = ConstantMeleeBoxSize;
         IsAttacking = false;
     }
     private void OnDrawGizmos()
@@ -204,7 +234,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         if (MeleeAttack != null)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(MeleeAttack.position, MeleeHurtbox);
+            Gizmos.DrawWireCube(MeleeAttack.position, MeleeAttackRange);
         }
     }
     #endregion
