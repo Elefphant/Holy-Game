@@ -219,9 +219,9 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeAttackRange, 0f, enemyLayer);
         foreach (var collider in colliders)
         {
-            if (collider.gameObject == collider.CompareTag("Enemy"))
+            if (collider.TryGetComponent<SimpleEnemyMovement>(out SimpleEnemyMovement enemy))
             {
-                //Deal Damage
+                // enemy.TakeDamage(G_MeleeDamage);
             }
         }
         Debug.Log("Attacked");
