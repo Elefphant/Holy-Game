@@ -6,6 +6,8 @@ public class SimpleEnemyMovement : MonoBehaviour
     public float speed;
     public bool isWalking = true;
     public bool isGoingLeft = true;
+    //olf code
+    public float health = 3f;
 
     [Header("Homing")]
     public bool homing;
@@ -13,6 +15,20 @@ public class SimpleEnemyMovement : MonoBehaviour
     public float aggroDistance;
     public float aggroSpeed;
     public GameObject player;
+
+    public void TakeDamage(float damageAmount)
+    {
+        health -= damageAmount;
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
 
     void Start()
     {

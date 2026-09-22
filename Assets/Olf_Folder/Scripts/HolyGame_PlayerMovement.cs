@@ -221,7 +221,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         {
             if (collider.TryGetComponent<SimpleEnemyMovement>(out SimpleEnemyMovement enemy))
             {
-                // enemy.TakeDamage(G_MeleeDamage);
+                enemy.TakeDamage(G_MeleeDamage);
             }
         }
         Debug.Log("Attacked");
