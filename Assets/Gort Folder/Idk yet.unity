@@ -1243,21 +1243,13 @@ MonoBehaviour:
   - {fileID: 467172266}
   - {fileID: 1683571328}
   - {fileID: 1587672707}
-  SlotCoordinates:
+  GroupCoordinates:
   - {x: 0, y: 2}
   - {x: 1, y: 2}
-  - {x: 2, y: 2}
-  - {x: 3, y: 2}
-  - {x: 4, y: 2}
-  - {x: 5, y: 2}
   - {x: 0, y: 1}
   - {x: 1, y: 1}
   - {x: 0, y: 0}
   - {x: 1, y: 0}
-  - {x: 2, y: 0}
-  - {x: 3, y: 0}
-  - {x: 4, y: 0}
-  - {x: 5, y: 0}
   Potion: {fileID: 2561096125201458697, guid: f3c8d8c8b8741ec45a527fa45804c4f0, type: 3}
   Potion2: {fileID: 1023021377411804833, guid: 55ef47d669c247f4a9f5a851140e3ae2, type: 3}
   Helmet: {fileID: 5395437026933483903, guid: 2c88d1b8108cd604fa14a50c6ef1c8d0, type: 3}

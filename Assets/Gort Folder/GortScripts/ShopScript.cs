@@ -10,8 +10,10 @@ public class ShopScript : MonoBehaviour
     public List<AudioClip> coinSounds;
 
     private List<GameObject> Items = new List<GameObject>();
+    private List<List<GameObject>> ItemGroups = new List<List<GameObject>>();
     public List<Transform> ItemSlots = new List<Transform>();
-    public List<Vector2Int> SlotCoordinates = new List<Vector2Int>();
+    public List<Vector2Int> GroupCoordinates = new List<Vector2Int>();
+    private List<int> GroupItemIndexes = new List<int>();
 
     public GameObject Potion;
     public GameObject Potion2;
@@ -21,7 +23,7 @@ public class ShopScript : MonoBehaviour
 
     public GameObject Indicator;
     public int Columns = 5;
-    private int CurrentSlot = 0;
+    private int CurrentGroup = 0;
 
     public int Currency;
     public Text CurrencyText;
@@ -59,6 +61,11 @@ public class ShopScript : MonoBehaviour
     }
     void RefreshShop()
     {
+        Items.Clear();
+        ItemGroups.Clear();
+        GroupItemIndexes.Clear();
+
+            
         for (int i = 0; i < ItemSlots.Count; i++)
         {
             GameObject newItem = new GameObject();
@@ -83,6 +90,41 @@ public class ShopScript : MonoBehaviour
 
             Items.Add(newItem);
         }
+        
+        List<GameObject> tempList = new List<GameObject>();
+        List<GameObject> tempList2 = new List<GameObject>();
+        List<GameObject> tempList3 = new List<GameObject>();
+        List<GameObject> tempList4 = new List<GameObject>();
+        List<GameObject> tempList5 = new List<GameObject>();
+        List<GameObject> tempList6 = new List<GameObject>();
+
+        tempList.Add(Items[0]);
+        tempList.Add(Items[1]);
+        tempList.Add(Items[2]);
+        tempList2.Add(Items[3]);
+        tempList2.Add(Items[4]);
+        tempList2.Add(Items[5]);
+        tempList3.Add(Items[6]);
+        tempList4.Add(Items[7]);
+        tempList5.Add(Items[8]);
+        tempList5.Add(Items[9]);
+        tempList5.Add(Items[10]);
+        tempList6.Add(Items[11]);
+        tempList6.Add(Items[12]);
+        tempList6.Add(Items[13]);
+
+        ItemGroups.Add(tempList);
+        ItemGroups.Add(tempList2);
+        ItemGroups.Add(tempList3);
+        ItemGroups.Add(tempList4);
+        ItemGroups.Add(tempList5);
+        ItemGroups.Add(tempList6);
+
+        for (int i = 0; i < ItemGroups.Count; i++)
+        {
+            GroupItemIndexes.Add(0);
+        }
+
         CurrencyText.text = "Currency: " + Currency;
     }
     void PlayRandomCoinSound()
@@ -123,34 +165,92 @@ public class ShopScript : MonoBehaviour
     }
     void UpdateCostTexts()
     {
-        for (int i = 0; i < ItemSlots.Count; i++)
-        {
-            if (i == CurrentSlot && Items[CurrentSlot] != null)
-            {
-                ItemSlots[i].GetChild(0).GetChild(0).GetComponent<Text>().text = "Cost: " + Items[CurrentSlot].GetComponent<ItemStatsScript>().Price;
-            }
-            else
-            {
-                ItemSlots[i].GetChild(0).GetChild(0).GetComponent<Text>().text = "";
-            }
+        for (int groupIndex = 0; groupIndex < ItemGroups.Count; groupIndex++) 
+        { 
+            List<GameObject> group = ItemGroups[groupIndex]; 
+            int activeIndex = GroupItemIndexes[groupIndex]; 
+
+            for (int itemIndex = 0; itemIndex < group.Count; itemIndex++) 
+            { 
+                GameObject item = group[itemIndex]; 
+                if (item == null)
+                {
+                    continue;
+                }
+
+                int itemSlotIndex = Items.IndexOf(item); 
+                if (itemSlotIndex < 0 || itemSlotIndex >= ItemSlots.Count)
+                { 
+                    continue; 
+                }
+
+                Text costText = ItemSlots[itemSlotIndex].GetComponentInChildren<Text>();
+
+                if (costText == null)
+                {
+                    continue;
+                }
+                    
+                if (itemIndex == activeIndex && groupIndex == CurrentGroup) 
+                { 
+                    ItemStatsScript stats = item.GetComponent<ItemStatsScript>(); 
+                    if (stats != null) 
+                    { 
+                        costText.text = "Cost: " + stats.Price; 
+                    } 
+                } 
+                else 
+                { 
+                    costText.text = ""; 
+                } 
+            } 
         }
+    }
+    void BuyCurrentItem()
+    {
+        if (CurrentGroup < 0 || CurrentGroup >= ItemGroups.Count)
+        {
+            return;
+        }
+
+        List<GameObject> currentGroup = ItemGroups[CurrentGroup];
+        int currentItemIndex = GroupItemIndexes[CurrentGroup];
+
+        if (currentItemIndex >= currentGroup.Count)
+        {
+            return;
+        }
+
+        GameObject currentItem = currentGroup[currentItemIndex];
+        if (currentItem == null)
+        {
+            return;
+        }
+
+        int cost = currentItem.GetComponent<ItemStatsScript>().Price;
+
+        if (Currency - cost < 0)
+        {
+            return;
+        }
+        
+        Currency -= cost;
+        CurrencyText.text = "Currency: " + Currency;
+
+        Destroy(currentItem);
+        GroupItemIndexes[CurrentGroup]++;
+
+        soundCounter = 0;
+        hasPlayedSFX1 = false;
+        hasPlayedSFX2 = false;
+        hasPlayedSFX3 = false;
+        
     }
     void PlayerInput()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && Items[CurrentSlot] != null)
+        if (ShopBuyAction.WasPerformedThisFrame())
         {
-            int cost = Items[CurrentSlot].GetComponent<ItemStatsScript>().Price;
-            if (Currency - cost >= 0 )
-            {
-                Currency -= cost;
-                CurrencyText.text = "Currency: " + Currency;
-                Destroy(Items[CurrentSlot]);
-
-                soundCounter = 0;
-                hasPlayedSFX1 = false;
-                hasPlayedSFX2 = false;
-                hasPlayedSFX3 = false;
-            }   
+            BuyCurrentItem();
         }
 
         Vector2 input = ShopNavigateAction.ReadValue<Vector2>();
@@ -177,21 +277,39 @@ public class ShopScript : MonoBehaviour
     }
     void Move(Vector2Int direction)
     {
-        Vector2Int currentCoordinate = SlotCoordinates[CurrentSlot];
+        Vector2Int currentCoordinate = GroupCoordinates[CurrentGroup];
         Vector2Int targetCoordinate = currentCoordinate + direction;
 
-        for (int i = 0; i < SlotCoordinates.Count; i++)
+        for (int i = 0; i < GroupCoordinates.Count; i++)
         {
-            if (SlotCoordinates[i] == targetCoordinate)
+            if (GroupCoordinates[i] == targetCoordinate)
             {
-                CurrentSlot = i;
+                CurrentGroup = i;
+                
                 return;
             }
         }
     }
     void UpdateIndicator()
-    {   
-        Indicator.transform.position = ItemSlots[CurrentSlot].position;
+    {
+        List<GameObject> currentGroup = ItemGroups[CurrentGroup];
+        int currentItemIndex = GroupItemIndexes[CurrentGroup];
+
+        if (currentItemIndex >= currentGroup.Count) 
+        { 
+            Indicator.SetActive(false); 
+            return; 
+        }
+
+        GameObject currentItem = currentGroup[currentItemIndex]; 
+        if (currentItem == null) 
+        { 
+            Indicator.SetActive(false); 
+            return; 
+        }
+
+        Indicator.SetActive(true); 
+        Indicator.transform.position = currentItem.transform.position;
     }
     void Update()
     {
