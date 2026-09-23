@@ -9,11 +9,13 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject firstSelectedButton;
     [SerializeField] private GameObject firstSelectedOptionsButton;
 
-    [SerializeField] private GameObject mainMenuPanel;
-    [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameObject mainMenuCanvas;
+    [SerializeField] private GameObject optionsCanvas;
 
     [SerializeField] private ScreenFader fader;
     [SerializeField] private AudioClip playGameSound;
+
+    public GameObject soundManager;
 
     private void OnEnable()
     {
@@ -32,8 +34,11 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
+        mainMenuCanvas.SetActive(true);
+        optionsCanvas.SetActive(false);
+
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -45,8 +50,8 @@ public class MainMenu : MonoBehaviour
 
     public void Options()
     {
-        mainMenuPanel.SetActive(false);
-        optionsPanel.SetActive(true);
+        mainMenuCanvas.SetActive(false);
+        optionsCanvas.SetActive(true);
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(firstSelectedOptionsButton);
     }
@@ -54,10 +59,12 @@ public class MainMenu : MonoBehaviour
 
     public void Back()
     {
-        if (optionsPanel.activeSelf)
+        if (optionsCanvas.activeSelf)
         {
-            optionsPanel.SetActive(false);
-            mainMenuPanel.SetActive(true);
+            soundManager.GetComponent<SoundManager>().SaveVolumeSettings();
+
+            optionsCanvas.SetActive(false);
+            mainMenuCanvas.SetActive(true);
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(firstSelectedButton);
         }
