@@ -40,8 +40,8 @@ public class SoundManager : MonoBehaviour
     }
     public void LoadVolumeSettings()
     {
-        masterSlider.value = PlayerPrefs.GetFloat("MasterVolume");
-        musicSlider.value = PlayerPrefs.GetFloat("MusicVolume");
-        SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
+        masterSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.5f);
+        musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
     }
 }
