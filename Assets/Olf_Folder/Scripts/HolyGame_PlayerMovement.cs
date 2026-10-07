@@ -25,6 +25,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     #region Floats
     public float G_MovementSpeed;
     public float G_JumpSpeed;
+    [Range(0f,1f)]public float G_JumpMultiplier = 0.5f;
     public float G_DashSpeed;
     public float G_DashLength = 0.2f; // in seconds
     public float G_MeleeDamage;
@@ -92,6 +93,11 @@ public class HolyGame_PlayerMovement : MonoBehaviour
             Jump();
         }
 
+        if (G_JumpAction.WasReleasedThisFrame() && GodRB.linearVelocity.y > 0)
+        {
+            GodRB.linearVelocity = new Vector2(GodRB.linearVelocity.x, GodRB.linearVelocity.y * G_JumpMultiplier);
+        }
+
         if (G_AttackAction.WasPressedThisFrame())
         {
             MeleeAttackAction();
@@ -107,6 +113,7 @@ public class HolyGame_PlayerMovement : MonoBehaviour
         }
         #endregion
     }
+    
     #region Walk
     private void Walk()
     {
@@ -161,8 +168,8 @@ public class HolyGame_PlayerMovement : MonoBehaviour
 
         float originalGravity = GodRB.gravityScale;
         GodRB.gravityScale = 0;
-
         G_DashAmt -= 1;
+
         yield return new WaitForSeconds(G_DashLength);
 
         GodRB.gravityScale = originalGravity;
@@ -216,7 +223,14 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     private IEnumerator MeleeAttackRoutine(LayerMask enemyLayer)
     {
         IsAttacking = true;
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeAttackRange, 0f, enemyLayer);
+        // Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeAttackRange, 0f, enemyLayer);
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(enemyLayer);
+        filter.useTriggers = true;
+
+        List<Collider2D> colliders = new List<Collider2D>();
+        Physics2D.OverlapBox(MeleeAttack.position, MeleeAttackRange, 0f, filter, colliders);
+
         foreach (var collider in colliders)
         {
             if (collider.TryGetComponent<SimpleEnemyMovement>(out SimpleEnemyMovement enemy))
