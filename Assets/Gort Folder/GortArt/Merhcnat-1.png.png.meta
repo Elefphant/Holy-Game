@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 10c4625084e83ab4da138e6d7afe8817
+guid: cdf940368a7d930499c3ea58741bc08a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2172206635208803568
-    second: Naurlsson-1.png_0
+      213: 79407950762644265
+    second: Merhcnat-1.png_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Naurlsson-1.png_0
+      name: Merhcnat-1.png_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 192
-        height: 108
+        x: 61
+        y: 29
+        width: 38
+        height: 45
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 01bf1a9f295cad1e0800000000000000
-      internalID: -2172206635208803568
+      spriteID: 9239c894c1d1a1100800000000000000
+      internalID: 79407950762644265
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Naurlsson-1.png_0: -2172206635208803568
+      Merhcnat-1.png_0: 79407950762644265
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
