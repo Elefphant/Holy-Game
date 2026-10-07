@@ -223,7 +223,14 @@ public class HolyGame_PlayerMovement : MonoBehaviour
     private IEnumerator MeleeAttackRoutine(LayerMask enemyLayer)
     {
         IsAttacking = true;
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeAttackRange, 0f, enemyLayer);
+        // Collider2D[] colliders = Physics2D.OverlapBoxAll(MeleeAttack.position, MeleeAttackRange, 0f, enemyLayer);
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(enemyLayer);
+        filter.useTriggers = true;
+
+        List<Collider2D> colliders = new List<Collider2D>();
+        Physics2D.OverlapBox(MeleeAttack.position, MeleeAttackRange, 0f, filter, colliders);
+
         foreach (var collider in colliders)
         {
             if (collider.TryGetComponent<SimpleEnemyMovement>(out SimpleEnemyMovement enemy))
